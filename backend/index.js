@@ -5,6 +5,9 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors'
 
 import authRouter from './routes/auth.route.js'
+import messageRouter from './routes/message.route.js'
+import userRouter from './routes/user.route.js'
+
 
 const app = express();
 app.use(cookieParser())
@@ -25,6 +28,9 @@ app.use(express.json())
 
 
 app.use('/api/auth', authRouter)
+app.use('/api/message', messageRouter)
+app.use('/api/user', userRouter)
+
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;

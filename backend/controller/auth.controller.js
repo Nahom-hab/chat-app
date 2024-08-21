@@ -1,6 +1,6 @@
 import User from "../models/userModel.js";
 import bcryptjs from 'bcryptjs';
-import { errorHandeler } from "../utils/errorHandler.js";
+import { errorHandeler } from "../utils/errorHandler.js"; // Ensure the spelling matches your implementation
 import GenerateJwtToken from "../utils/GenerateJwtToken.js";
 
 export const signup = async (req, res, next) => {
@@ -16,7 +16,7 @@ export const signup = async (req, res, next) => {
         const newUser = new User({ full_name, username, gender, password: hashedPassword, profilePic });
 
         await newUser.save();
-        GenerateJwtToken(newUser._id, res);
+        // GenerateJwtToken(newUser._id, res);
 
         res.status(201).json({
             _id: newUser._id,
@@ -25,6 +25,8 @@ export const signup = async (req, res, next) => {
             profilePic: newUser.profilePic
         });
     } catch (error) {
+        console.log(error);
+
         next(errorHandeler(500, 'Internal server error'));
     }
 };
@@ -33,10 +35,10 @@ export const login = async (req, res, next) => {
     const { username, password } = req.body;
     try {
         const validUser = await User.findOne({ username });
-        if (!validUser) return next(errorHandeler(404, 'User not found'));
+        if (!validUser) return next(errorHandler(404, 'User not found'));
 
         const validPassword = bcryptjs.compareSync(password, validUser.password);
-        if (!validPassword) return next(errorHandeler(401, 'Wrong credentials'));
+        if (!validPassword) return next(errorHandler(401, 'Wrong credentials'));
 
         GenerateJwtToken(validUser._id, res);
         const { password: hashedPassword, ...otherUserData } = validUser._doc;
@@ -49,7 +51,7 @@ export const login = async (req, res, next) => {
 
 export const signout = (req, res, next) => {
     try {
-        res.clearCookie('jwt'); // Ensure this matches the cookie name used in GenerateJwtToken
+        res.clearCookie('jwt');
         res.status(200).json('User logged out');
     } catch (error) {
         next(error);
