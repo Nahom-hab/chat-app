@@ -61,14 +61,14 @@ export const getUser = async (req, res, next) => {
     if (req.params.id !== null) {
         try {
             const userId = req.params.id;
-            const user = await User.findOne({ _id: userId });
+            const user = await User.find({ _id: userId });
 
-            if (user) {
+            if (user[0]) {
                 res.status(200).json({
-                    _id: user._id,
-                    username: user.username,
-                    full_name: user.full_name,
-                    profilePic: user.profilePic
+                    _id: user[0]._id,
+                    username: user[0].username,
+                    full_name: user[0].full_name,
+                    profilePic: user[0].profilePic
                 });
             } else {
                 res.status(404).json({ message: 'User not found' });

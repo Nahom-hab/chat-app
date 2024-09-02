@@ -1,29 +1,9 @@
-import { useEffect, useState } from "react";
+import useConversation from "../zustand/useConversationStore";
 
-export default function MessageHeader({ selectedFriendID }) {
-    const [selectedFriend, setSelectedfriend] = useState(null);
+export default function MessageHeader() {
+    const { SelectedFriend } = useConversation()
 
-    useEffect(() => {
-        // Check if selectedFriendID is not null or undefined before making the API call
-        if (selectedFriendID) {
-            const getUser = async () => {
-                try {
-                    const response = await fetch(`/api/user/${selectedFriendID}`);
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch user');
-                    }
-                    const newuser = await response.json();
-                    setSelectedfriend(newuser);
-                    console.log(newuser);
-                } catch (error) {
-                    console.log(error);
-                }
-            };
-            getUser();
-        }
-    }, [selectedFriendID]);
-
-    if (!selectedFriend) {
+    if (!SelectedFriend) {
         return (
             <div className="flex items-center mb-4">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -36,12 +16,12 @@ export default function MessageHeader({ selectedFriendID }) {
     return (
         <div className="flex items-center mb-4">
             <img
-                src={selectedFriend.profilePic}
-                alt={selectedFriend.full_name}
+                src={SelectedFriend.profilePic}
+                alt={SelectedFriend.full_name}
                 className="w-10 h-10 rounded-full mr-2"
             />
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                {selectedFriend.username}
+                {SelectedFriend.username}
             </h2>
         </div>
     );

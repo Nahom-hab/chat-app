@@ -1,14 +1,14 @@
-// src/pages/LoginPage.jsx
-import React, { useState } from 'react';
-import { useAuthContext } from '../Context/Authcontext';
+import React, { useState, useEffect } from 'react';
+import useConversation from '../zustand/useConversationStore';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
-    const { AuthUser, setAuthUser } = useAuthContext()
+    const navigate = useNavigate();
+    const { AuthUser, setAuthUser } = useConversation();
     const [formData, setFormData] = useState({
         username: '',
         password: '',
     });
-
     const [errors, setErrors] = useState({});
 
     const handleChange = (e) => {
@@ -18,7 +18,6 @@ const LoginPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrors({});
-        console.log(formData);
 
         try {
             const res = await fetch('/api/auth/login', {
@@ -28,21 +27,33 @@ const LoginPage = () => {
                 },
                 body: JSON.stringify(formData),
             });
-            const data = await res.json()
-            //local storage
-            if (data) {
-                localStorage.setItem('chat-user', JSON.stringify(data))
-                setAuthUser(data)
-                console.log(AuthUser);
 
+            if (!res.ok) {
+                const errorData = await res.json();
+                if (errorData.errors) {
+                    setErrors(errorData.errors); // Assuming errorData.errors is an object with keys as field names
+                } else {
+                    setErrors({ general: errorData.error || 'An error occurred' });
+                }
+                return;
+            }
+
+            const data = await res.json();
+            if (data) {
+                localStorage.setItem('chat-user', JSON.stringify(data));
+                setAuthUser(data);
+                navigate('/');
             }
 
         } catch (err) {
-            console.log(err);
-
-            // dispatch(signInFailure(err.message));
+            console.log('Fetch Error:', err);
+            setErrors({ general: 'An error occurred' });
         }
     };
+
+    useEffect(() => {
+        console.log('Updated AuthUser:', AuthUser);
+    }, [AuthUser]);
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
@@ -57,7 +68,7 @@ const LoginPage = () => {
                             name="username"
                             value={formData.username}
                             onChange={handleChange}
-                            className={`mt-1 p-1 pl-3 block w-full  dark:text-white bg-slate-300 outline-none rounded-md shadow-sm dark:bg-gray-700 ${errors.username ? 'border-red-500 dark:border-red-500' : ''}`}
+                            className={`mt-1 p-1 pl-3 block w-full dark:text-white bg-slate-300 outline-none rounded-md shadow-sm dark:bg-gray-700 ${errors.username ? 'border-red-500 dark:border-red-500' : ''}`}
                         />
                         {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username}</p>}
                     </div>

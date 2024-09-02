@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useAuthContext } from '../Context/Authcontext';
+import React, { useState, useEffect } from 'react';
+import useConversation from '../zustand/useConversationStore';
 
 const SignUpPage = () => {
-    const { AuthUser, setAuthUser } = useAuthContext()
+    const { AuthUser, setAuthUser } = useConversation();
     const [formData, setFormData] = useState({
         full_name: '',
         username: '',
@@ -10,6 +10,7 @@ const SignUpPage = () => {
         gender: '',
     });
     const [errors, setErrors] = useState({});
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -17,7 +18,7 @@ const SignUpPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrors({});
-        console.log(formData);
+        console.log("Form Data:", formData);
 
         try {
             const res = await fetch('/api/auth/signup', {
@@ -30,32 +31,34 @@ const SignUpPage = () => {
 
             if (!res.ok) {
                 const { error } = await res.json();
+                setErrors({ general: error || 'An error occurred' });
                 return;
             }
             const data = await res.json();
-            console.log(data);
+            console.log("Response Data:", data);
 
-            //local storage
             if (data) {
-                localStorage.setItem('chat-user', JSON.stringify(data))
-                setAuthUser(data)
-                console.log(AuthUser);
-
+                console.log("Data to be stored in localStorage:", data);
+                localStorage.setItem('chat-user', JSON.stringify(data));
+                setAuthUser(data);
             }
 
-
         } catch (err) {
-            console.log(err);
-            // dispatch(signInFailure(err.message));
+            console.log("Fetch Error:", err);
+            setErrors({ general: 'An error occurred' });
         }
-
     };
+
+    useEffect(() => {
+        console.log("Updated AuthUser:", AuthUser);
+    }, [AuthUser]);
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 p-4">
             <div className="w-full max-w-md bg-gray-200 dark:bg-gray-800 p-8 rounded-lg shadow-md">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Sign Up</h2>
                 <form onSubmit={handleSubmit}>
+                    {/* Form fields */}
                     <div className="mb-4">
                         <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
                         <input
@@ -64,10 +67,11 @@ const SignUpPage = () => {
                             name="full_name"
                             value={formData.full_name}
                             onChange={handleChange}
-                            className={`mt-1 p-2 block w-full bg-gray-100 dark:bg-gray-700 dark:text-white rounded-md shadow-sm border border-gray-300 dark:border-gray-600 outline-none ${errors.fullName ? 'border-red-500 dark:border-red-500' : ''}`}
+                            className={`mt-1 p-2 block w-full bg-gray-100 dark:bg-gray-700 dark:text-white rounded-md shadow-sm border border-gray-300 dark:border-gray-600 outline-none ${errors.full_name ? 'border-red-500 dark:border-red-500' : ''}`}
                         />
                         {errors.full_name && <p className="text-red-500 text-sm mt-1">{errors.full_name}</p>}
                     </div>
+                    {/* Other form fields */}
                     <div className="mb-4">
                         <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Username</label>
                         <input
