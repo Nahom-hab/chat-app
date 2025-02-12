@@ -35,10 +35,10 @@ export const login = async (req, res, next) => {
     const { username, password } = req.body;
     try {
         const validUser = await User.findOne({ username });
-        if (!validUser) return next(errorHandler(404, 'User not found'));
+        if (!validUser) return next(errorHandeler(404, 'User not found'));
 
         const validPassword = bcryptjs.compareSync(password, validUser.password);
-        if (!validPassword) return next(errorHandler(401, 'Wrong credentials'));
+        if (!validPassword) return next(errorHandeler(401, 'Wrong credentials'));
 
         GenerateJwtToken(validUser._id, res);
         const { password: hashedPassword, ...otherUserData } = validUser._doc;

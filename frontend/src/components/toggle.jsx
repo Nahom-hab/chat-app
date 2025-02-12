@@ -1,4 +1,3 @@
-// src/components/ThemeToggle.jsx
 import React, { useState, useEffect } from 'react';
 import { FaMoon, FaSun } from 'react-icons/fa'; // Ensure this import works correctly
 
@@ -23,7 +22,7 @@ const ThemeToggle = () => {
     };
 
     return (
-        <div className="fixed top-0  right-4 flex items-center">
+        <div className="fixed top-4  right-4 flex items-center">
             <button
                 onClick={handleToggle}
                 className="relative flex items-center border-slate-300 border dark:border-slate-900 p-1 rounded-full w-16 h-8 bg-slate-200 dark:bg-gray-800 cursor-pointer"

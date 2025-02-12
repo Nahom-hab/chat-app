@@ -6,7 +6,7 @@ export default function SideBarFriends({ friends }) {
     const { onlineUsers } = useSocketContext()
     return (
         <ul className="space-y-2 mt-4  ml-3 lg:block overflow-y-auto max-h-[34rem] scrollbar-light dark:scrollbar-dark">
-            {friends?.map((friend) => (
+            {friends && friends?.map((friend) => (
                 <li
                     className={` ${SelectedFriend?._id === friend._id ? 'bg-slate-100 dark:bg-slate-900' : ''} flex w-64  items-center cursor-pointer p-2 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-md`}
                     onClick={() => setSelectedFriend(friend)}
