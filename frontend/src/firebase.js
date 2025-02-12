@@ -1,17 +1,19 @@
 // firebase.js
 import { initializeApp } from 'firebase/app';
-import { getStorage } from 'firebase/storage';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
+// Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: 'YOUR_API_KEY',
-    authDomain: 'YOUR_AUTH_DOMAIN',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    appId: 'YOUR_APP_ID',
+    apiKey: "AIzaSyBFkW628qUZn2zahE9pMVTuUqfKrh5Qvoo",
+    authDomain: "realestate-mern-6e436.firebaseapp.com",
+    projectId: "realestate-mern-6e436",
+    storageBucket: "realestate-mern-6e436.appspot.com",
+    messagingSenderId: "714976465484",
+    appId: "1:714976465484:web:219f88f34330897f2ddae9"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 
-export { storage };
+export { storage, ref, uploadBytesResumable, getDownloadURL };

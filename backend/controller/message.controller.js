@@ -3,11 +3,50 @@ import Message from "../models/messageModel.js";
 import { getReciverSocketId, io } from "../socket/socket.js";
 import { errorHandeler } from "../utils/errorHandler.js";
 
+
+export const getMessages = async (req, res, next) => {
+    try {
+        const reciverID = req.params.id;
+        const senderID = req.user._id;
+
+        // Ensure receiver ID is not null
+        if (!reciverID) {
+            return next(errorHandeler(400, 'Receiver ID is required'));
+        }
+
+        // Find existing conversation between sender and receiver
+        const conversation = await Conversation.findOne({
+            participants: { $all: [senderID, reciverID] },
+        });
+
+        // Check if conversation exists
+        if (!conversation) {
+            return res.status(200).json([]); // Return early if no conversation found
+        }
+
+        // Fetch all messages at once using $in
+        const messageArray = await Message.find({
+            _id: { $in: conversation.messages },
+        });
+
+        // Respond with the messages
+        res.status(200).json(messageArray);
+    } catch (error) {
+        console.error(error); // Log the error for debugging
+        next(errorHandeler(500, 'Internal server error'));
+    }
+};
+
 export const sendMessage = async (req, res, next) => {
     try {
         const reciverID = req.params.id;
         const { message } = req.body;
         const senderID = req.user._id;
+
+        // Check if message content is provided
+        if (!message) {
+            return next(errorHandeler(400, 'Message content is required'));
+        }
 
         // Find existing conversation between sender and receiver
         let conversation = await Conversation.findOne({
@@ -17,7 +56,7 @@ export const sendMessage = async (req, res, next) => {
         // Create a new conversation if one doesn't exist
         if (!conversation) {
             conversation = await Conversation.create({
-                participants: [senderID, reciverID]
+                participants: [senderID, reciverID],
             });
         }
 
@@ -25,16 +64,17 @@ export const sendMessage = async (req, res, next) => {
         const newMessage = new Message({
             senderID,
             reciverID,
-            message
+            message,
         });
         conversation.messages.push(newMessage._id);
 
-        await Promise.all([newMessage.save(), conversation.save()])
+        await Promise.all([newMessage.save(), conversation.save()]);
 
-        const reciverSocketID = getReciverSocketId(reciverID)
+        const reciverSocketID = getReciverSocketId(reciverID);
         if (reciverSocketID) {
-            io.to(reciverSocketID).emit('newMessage', newMessage)
+            io.to(reciverSocketID).emit('newMessage', newMessage);
         }
+
         // Respond with the new message
         res.status(201).json(newMessage);
     } catch (error) {
@@ -42,33 +82,3 @@ export const sendMessage = async (req, res, next) => {
         next(errorHandeler(500, 'Internal server error'));
     }
 };
-export const getMessages = async (req, res, next) => {
-    if (req.params.id !== null) {
-        try {
-            const reciverID = req.params.id;
-            const senderID = req.user._id;
-
-            // Find existing conversation between sender and receiver
-            const conversation = await Conversation.findOne({
-                participants: { $all: [senderID, reciverID] },
-            });
-
-            // Check if conversation exists
-            if (!conversation) {
-                res.status(200).json([])
-            }
-
-            // Fetch all messages at once using $in
-            const messageArray = await Message.find({
-                _id: { $in: conversation.messages },
-            });
-
-            // Respond with the messages
-            res.status(200).json(messageArray);
-        } catch (error) {
-            console.error(error); // Log the error for debugging
-            next(errorHandeler(500, 'Internal server error'));
-        }
-    }
-};
-

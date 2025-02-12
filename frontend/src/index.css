@@ -51,16 +51,40 @@
         transform: translateX(0);
     }
 
-    25% {
-        transform: translateX(-5px);
+    10% {
+        transform: translateX(-10px);
+    }
+
+    20% {
+        transform: translateX(10px);
+    }
+
+    30% {
+        transform: translateX(-10px);
+    }
+
+    40% {
+        transform: translateX(10px);
     }
 
     50% {
-        transform: translateX(5px);
+        transform: translateX(-10px);
     }
 
-    75% {
-        transform: translateX(-5px);
+    60% {
+        transform: translateX(10px);
+    }
+
+    70% {
+        transform: translateX(-10px);
+    }
+
+    80% {
+        transform: translateX(10px);
+    }
+
+    90% {
+        transform: translateX(-10px);
     }
 
     100% {
@@ -68,7 +92,54 @@
     }
 }
 
-/* Apply the animation */
+/* Apply the enhanced animation */
 .shake {
-    animation: shake 0.5s;
+    animation: shake 0.7s;
+}
+
+
+/* Smoother waving hand animation keyframes */
+@keyframes wave {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    10% {
+        transform: rotate(14deg);
+    }
+
+    20% {
+        transform: rotate(-8deg);
+    }
+
+    30% {
+        transform: rotate(14deg);
+    }
+
+    40% {
+        transform: rotate(-4deg);
+    }
+
+    50% {
+        transform: rotate(10deg);
+    }
+
+    60% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+/* Hand emoji styling and smoother animation */
+.hand-emoji {
+    font-size: 3rem;
+    /* Adjust the size as needed */
+    display: inline-block;
+    animation: wave 2s ease-in-out infinite;
+    /* Duration, timing, and repetition */
+    transform-origin: bottom right;
+    /* Adjust the origin for natural movement */
 }

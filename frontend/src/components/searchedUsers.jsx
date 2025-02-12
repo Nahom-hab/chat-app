@@ -6,7 +6,7 @@ export default function SearchedUsers({ setSearchTerm, searchedUsers }) {
 
 
     return (
-        <div className='space-y-2 mt-4 overflow-y-auto max-h-[34rem] scrollbar-custom'>
+        <div className='space-y-2 mt-2 w-[150px] overflow-y-auto max-h-[36rem] scrollbar-custom'>
             {searchedUsers !== null ? (
                 searchedUsers.map((user) => (
                     <div onClick={() => {

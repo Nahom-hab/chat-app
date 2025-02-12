@@ -80,3 +80,40 @@ export const getUser = async (req, res, next) => {
         }
     }
 };
+import bcrypt from 'bcryptjs';
+
+export const updateUser = async (req, res, next) => {
+    if (req.user.id !== req.params.id) {
+        return next(errorHandeler(401, 'You can only update your own account'));
+    }
+
+    try {
+        // Create an object to hold updates
+        const updates = {
+            username: req.body.username,
+            full_name: req.body.full_name,
+            profilePic: req.body.profilePic,
+        };
+
+        // If password is provided, hash it before saving
+        if (req.body.password) {
+            const salt = await bcrypt.genSalt(10);
+            updates.password = await bcrypt.hash(req.body.password, salt);
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            req.params.id,
+            { $set: updates },
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return next(errorHandeler(404, 'User not found'));
+        }
+
+        const { password, ...rest } = updatedUser.toObject(); // Exclude password from response
+        res.status(200).json(rest);
+    } catch (error) {
+        next(error);
+    }
+};

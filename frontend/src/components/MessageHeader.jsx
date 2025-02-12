@@ -7,7 +7,7 @@ export default function MessageHeader() {
         return (
             <div className="flex items-center mb-4">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                    Select a friend to view their profile.
+                    {/* Select a friend to view their profile. */}
                 </h2>
             </div>
         );
